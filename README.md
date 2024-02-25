@@ -14,23 +14,36 @@ The simulator can:
 Postgres can be run within Docker, I am using Rancher to do so.
 
 - ```helm install user-mgmt-postgresql bitnami/postgres```
+
 - Setup port forwarding in rancher dashboard on port 5432 (matches user-mgmt-sandbox.env)
+
 - Get the password from k8s secret
+
 ```export POSTGRES_PASSWORD=$(kubectl get secret --namespace default user-mgmt-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)```
+
 - test connection to database: psql
+
 ```psql --host 127.0.0.1 -U postgres -p 5432```
+
 - List databases
+
 ```postgres=# \l```
+
 - Create the database
+
 ```CREATE DATABASE user_mgmt_sandbox;```
+
 - Install UUID connection
+
 ```\c <database_name>```
+
 - ADD in UUID extensions, to create them when adding in a user
+
 ```CREATE EXTENSION IF NOT EXISTS "uuid-ossp";```
 
 ## Create JWT public and private keys, and base64 encode them
 
-You will need both private and public keys for access tokens, and also refresh token. The private key is used to create the token, and the public key is used to decode the token. See token.go. 
+You will need both private and public keys for access tokens, and also refresh token. The private key is used to create the token, and the public key is used to decode the token. See token.go.
 
 - Create a private pem key
 
@@ -82,18 +95,27 @@ Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-
 [GIN] 2024/02/25 - 14:09:34 | 200 |     6.75038ms |       127.0.0.1 | GET      "/api/auth/refresh"
 ```
 
-## Verifying the API with Insomnia 
+## Verifying the API with Insomnia
 
 - Check Healthchecker from browser and/or curl
-Create a get command and enter... 
+
+Create a get command and enter...
+
 go to ```http://localhost:8000/api/healthchecker```
+
 - or run curl
+
 ```curl http://localhost:8000/api/healthchecker```
-response is 
+
+response is
+
 ```{"message":"Welcome to User Management Sandbox","status":"success"}```
 
 - Start to register users using POST
-go to ```localhost:8000/api/auth/register ```
+
+go to
+
+```localhost:8000/api/auth/register```
 
 enter in JSON...
 
