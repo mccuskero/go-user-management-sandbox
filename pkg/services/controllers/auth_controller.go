@@ -12,6 +12,7 @@ import (
 	"github.com/mccuskero/go-user-management-sandbox/pkg/config"
 	"github.com/mccuskero/go-user-management-sandbox/pkg/models"
 	"github.com/mccuskero/go-user-management-sandbox/pkg/utils"
+	"github.com/mccuskero/go-user-management-sandbox/pkg/utils/token"
 )
 
 type AuthController struct {
@@ -100,13 +101,13 @@ func (ac *AuthController) SignInUser(ctx *gin.Context) {
 	config, _ := config.LoadConfig(".")
 
 	// Generate Tokens
-	access_token, err := utils.CreateToken(config.AccessTokenExpiresIn, user.ID, config.AccessTokenPrivateKey)
+	access_token, err := token.Create(config.AccessTokenExpiresIn, user.ID, config.AccessTokenPrivateKey)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": err.Error()})
 		return
 	}
 
-	refresh_token, err := utils.CreateToken(config.RefreshTokenExpiresIn, user.ID, config.RefreshTokenPrivateKey)
+	refresh_token, err := token.Create(config.RefreshTokenExpiresIn, user.ID, config.RefreshTokenPrivateKey)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": err.Error()})
 		return
@@ -132,7 +133,7 @@ func (ac *AuthController) UserProfile(ctx *gin.Context) {
 
 	config, _ := config.LoadConfig(".")
 
-	sub, err := utils.ValidateToken(cookie, config.AccessTokenPublicKey)
+	sub, err := token.Validate(cookie, config.AccessTokenPublicKey)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "fail", "message": err.Error()})
 		return
@@ -178,7 +179,7 @@ func (ac *AuthController) RefreshAccessToken(ctx *gin.Context) {
 
 	config, _ := config.LoadConfig(".")
 
-	sub, err := utils.ValidateToken(cookie, config.RefreshTokenPublicKey)
+	sub, err := token.Validate(cookie, config.RefreshTokenPublicKey)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "fail", "message": err.Error()})
 		return
@@ -191,7 +192,7 @@ func (ac *AuthController) RefreshAccessToken(ctx *gin.Context) {
 		return
 	}
 
-	access_token, err := utils.CreateToken(config.AccessTokenExpiresIn, user.ID, config.AccessTokenPrivateKey)
+	access_token, err := token.Create(config.AccessTokenExpiresIn, user.ID, config.AccessTokenPrivateKey)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "fail", "message": err.Error()})
 		return

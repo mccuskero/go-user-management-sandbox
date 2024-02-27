@@ -9,6 +9,7 @@ import (
 	"github.com/mccuskero/go-user-management-sandbox/pkg/config"
 	"github.com/mccuskero/go-user-management-sandbox/pkg/initializer"
 	"github.com/mccuskero/go-user-management-sandbox/pkg/models"
+	"github.com/mccuskero/go-user-management-sandbox/pkg/utils/token"
 )
 
 func DeserializeUser() gin.HandlerFunc {
@@ -31,7 +32,7 @@ func DeserializeUser() gin.HandlerFunc {
 		}
 
 		config, _ := config.LoadConfig(".")
-		sub, err := ValidateToken(access_token, config.AccessTokenPublicKey)
+		sub, err := token.Validate(access_token, config.AccessTokenPublicKey)
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"status": "fail", "message": err.Error()})
 			return
