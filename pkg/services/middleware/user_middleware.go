@@ -1,14 +1,12 @@
 package middleware
 
 import (
-	//	"log"
 	"fmt"
 	"net/http"
 	"strings"
 
 	"gorm.io/gorm"
 
-	//	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
 	"github.com/mccuskero/go-user-management-sandbox/pkg/config"
